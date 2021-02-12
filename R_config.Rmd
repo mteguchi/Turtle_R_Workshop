@@ -1,0 +1,134 @@
+---
+output: word_document
+---
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={Tomo Eguchi},
+            pdftitle={R configuration for Windows},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{R configuration for Windows}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Tomo Eguchi}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{2015-06-02}
+
+
+
+\begin{document}
+
+\maketitle
+
+
+\section{A little trick for the future ease of package management
+(Windows)}\label{a-little-trick-for-the-future-ease-of-package-management-windows}
+
+If you are using Mac, I don't know how this would affect. You need to
+look around on the Internet when you have problems finding libraries.
+
+We'll use many different packages and they need to be updated
+frequently. When R comes out with a major update, libraries need to be
+found by R. They don't seem to have an automatic way of keeping track of
+libraries. I have been lazy not to add ``path'' information to the R
+startup. Now, I'm teaching how to use R, I thought it would be best to
+pass on this information so that you won't have to deal with the
+headache in the future. You may need your Administrator access.
+
+Open ``Control Panel''
+
+\includegraphics{Control_Panel1_a.png}
+
+Select ``User Accounts''
+
+\includegraphics{User_Accounts_a.png}
+
+Select ``Change my environment variables'' on the left-hand panel:
+
+\includegraphics{Enviro_Vars_a.png}
+
+Click on ``New\ldots{}'' on the top half, then type in ``R\_LIBS_USER''
+(without quotation marks) for ``Variable name'' and
+``\%USERPROFILE\%\textbackslash{}AppData\textbackslash{}Local\textbackslash{}R''
+for ``Variable value'' and click ``OK'':
+
+\includegraphics{Enviro_Vars2_a.png}
+
+Then, create the folder by going to the path, in my case
+``C:\textbackslash{}Users\textbackslash{}t\_e\textbackslash{}AppData\textbackslash{}Local''
+and create a new folder and name it ``R''.
+
+\includegraphics{New_Folder_a.png}
+
+You see an ``R'' folder already in the picture because I already had it.
+
+\end{document}

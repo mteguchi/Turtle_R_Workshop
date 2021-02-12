@@ -1,0 +1,1201 @@
+---
+title: "R Workshop for the turtle groups"
+author: "Tomo Eguchi and Lisa Komoroske"
+date: '`r Sys.Date()`'
+output: word_document
+---
+
+#A teaser on R Markdown and Knitr
+This is a document made with R Markdown and Knitr in RStudio, demonstrating how a MS Word document can be created using R. This will eliminate copying and pasting results and plots when writing a document in MS Word. When finding an error in your data, all you need to do is to fix your data and run the document (knit) in R. All corrections will be made simulataneously, including figures and statistics.  
+
+R Markdown can produce HTML, PDF, and MS Word documents. More resources on R Markdown can be found at <http://rmarkdown.rstudio.com>.
+
+Everything you type will be converted into plain text. When you are ready to run a chunk of R code, you embed it using "backticks" like the following: 
+
+```
+> ```{r}
+> # your R code chunk here
+> ```
+```
+
+Of course, the previous chunk did not do anything because we did not put any code in there, except a comment line. A hash (#) is used to indicate a comment line in R. When you click on "Knit Word" button above, you will see that a Word document is created (I have not tested this on Mac or Linux computers). You will see that your comment was displayed. To suppress the comment line, you add an option (echo=FALSE) between the curly brackets:
+
+\{r echo=FALSE\}
+
+As you see, nothing returned from the previous chunk. You are encouraged to use it during this workshop but if it gets overwhelming, I suggest just using R and tackle R Markdown later.  
+
+#Organizing files
+We all have different ways to organize our "stuff". I know some people who can find anything in piles of "stuff" in their office spaces. Others need to have more structure in their "stuff". When using computers, however, you need to accomodate how computers find files. Computers prefer a highly structured environment. So... like it or not, you need to work with them. 
+
+Regardless of your choice of operating system, i.e., Windows, Mac, Unix, Linux, ..., the basic structure is the same. In recent years, many OSs have started using login-user specific home directory structure. For example, my home directory in a Windows computer looks like this:
+
+![alt text](images/libraries.png)
+
+When you look at the complete path, this looks like this: "C:\\users\\t_e\\". And within that directory, I have several directories that contain different things, like music, pictures, documents, etc. 
+I suggest you create an R directory somewhere in this home directory. In my case, I created one under "My Documents", like so:
+
+![alt text](images/R_directory2.png)
+
+In a Mac OS, it may look like this in Lisa's computer:
+
+![alt text](images/Mac_path_screenshot.jpg)
+
+All my R projects (we'll talk about this soon), are saved in this directory. When I open this R folder (a.k.a., directory), you see these:
+
+![alt text](images/inside_R_directory.png)
+
+Each project has its own directory. When a project gets large, I even split it even further:
+
+![alt text](images/Turtle_R_Workshop_dir.png)
+
+As you can see, I haven't done good job of keeping up with organizing everything... But you get the picture. 
+
+#Programming basics
+R is a high-level interpreted programming language. This means that you don't have to write code that gets compiled in your computer (this just means that it gets translated into a machine language). You write in a language that R can execute directly. Compiled languages need to be, well, compiled to each operating system. In R, you need to write code that R can understand and the rest is done in R. Some packages are written in compiled languages to make computations faster. 
+
+The basic idea of programming is to translate what you want to do to a step-by-step instruction for the computer. For example, if you want to add 1 and 3 in R, you would write 1 + 3 at your R console: > 1 + 3. Then you would get > ```r 1+3```. The console is handy for this type of one-off calculations, results on the console won't be saved automatically. If you want to do more complicated analyses, you would need multiple lines of code, so it's best to create a script so that everything is in one place. (R Markdown goes one step further by putting analyses and report writing in one package!) Results, then can be saved to a file so you can bring them back the next time you work on it or as need to upate your analyses as you collect more data. This is handy especially when computations take a long time to run. 
+
+For example, if you want to conduct a regession analysis on length and mass and plot the results, you will have to do the following steps:
+
+1. Import data
+2. Build statistical models on mass and length 
+3. Fit the models to the data
+4. Look at the results
+5. Plot the data and the best model
+
+Within each step, there may be multiple substeps (multiple lines of code). We'll go through this example later. 
+
+#R basics
+To get used to using R, we need to learn the basics; just like learning a new language. The syntax of each command can be found by looking up the help file; ">?*command_name*". For example, "?mean" will give you the help file for mean. No space between the question mark and the command name. Using RStudio, it shows up on one of the panels:
+
+![alt text](images/Help_mean.png)
+
+If you didn't know the exact function name, you can use "??" at the prompt. For example if you are looking for a function to create pie charts, you may type "??pie". The best way to find answers to this kind of questions is to Google, e.g., "How to plot pie charts in R". 
+
+Warning: R help files are not very helpful sometimes. Also, you need to know R to understand the help files. I know it's painful sometimes but there is no other way. R help files are written by R programmers, so can vary in how helpful they are. But there’s a large community of R users, and there are  other good sources where you can often find help: R Cheat Sheets or R Cookbook, Google search it! "How to add a linear trendline in R", Stackoverflow has tons of answers for questions you'll inevitably have. 
+
+You can set your working directory for a particular R session using the set-working-directory command (setwd). However, if you are using RStudio, your working directory is set when a project is opened. So... no need to do "setwd" when using RStudio.
+
+Sometimes, however, you may find yourself looking for a file (e.g., a data file) that is not in your current working directory and get the following error message. 
+
+Error in readChar(con, 5L, useBytes = TRUE) : cannot open the connection
+In addition: Warning message:
+In readChar(con, 5L, useBytes = TRUE) :
+  cannot open compressed file 'results\_MSORD\_S(T)_2016-04-26.RData', probable reason 'No such file or directory'
+  
+Did you accidentally put the data that you wanted in another folder? The most common errors importing data can be from simply being in a folder above where the file actually is, etc. 
+
+To find out where you are in the R session, you can use getwd() and find files within the directory using list.files():
+
+```{r getwd, echo = TRUE}
+# To figure out which directory you are working,
+getwd()
+
+# to find out what files are in the directory,
+list.files()
+```
+
+Also note that the list.files command without input returned all files in the directory. However, you can restrict the search pattern: 
+
+```{r setwd2, echo = TRUE}
+
+list.files(pattern = "2016")
+
+```
+
+The output of list.files() can be stored in a variable. It can be then used as any other R object. For example, you can access all files whose names contain ".txt" and write the file names into a file. (This is a little advanced topic but demonstrates how powerful a little bit of coding can be.) 
+
+```{r readfiles, echo=TRUE}
+# get all files with '.txt' in file names
+filenames <- list.files(path = "data/", pattern = ".txt")
+
+# open a new file in the "write text" mode
+new.filename <- file("data/newfile.txt", open = 'wt')
+
+# "apply" the function "write" to each element of filenames (contains all file names), with arguments output file name "new.filename" and "append" = TRUE
+apply(as.array(filenames), 
+      MARGIN = 1, 
+      FUN = write, 
+      file = new.filename, 
+      append = TRUE)
+close(new.filename)   # close the file connection
+# Now look at the directory and see if it did the job!
+
+```
+
+![alt text](images/newfile.png)
+
+It worked! 
+
+#Packages
+One of the strengths of R is the ability to utilize 'packages'. A package is an extra set of functions, code, and/or data that expands the capability of R, often written by scientists who needed some functionality that didn't yet exist within R. As of May 2016, there are 8,349 packages available for download that span a wide range of topics. These include: genomics, mapping, time-series analysis, plotting, and much more. The full list of available packages can be found here: https://cran.r-project.org/web/packages/. Packages must be downloaded and installed - they are all free. Let's download ggplot2, a graphing package.
+
+install.packages("ggplot2") 
+
+Before using a package, you need to "load" it into your workspace using the "library" command:
+library(ggplot2)
+
+It would be best to load the only packages that you'll need in the current session to keep R efficient - all the files in packages are stored in the computer's memory.
+
+#Understanding the difference between our eyes and computers (Curse of using Excel)
+Often times we use MS Excel as data manipulating software. Nothing is wrong with it and Excel is a fine tool for dealing with data (to a certain extent). However, we get carried away with what Excel does. For example, we may use colors and text to add "notes" to a dataset. For example, "Growth data Nov 2008.xlsx" include green turtle size information from the San Diego Bay study. When you open the file, you notice there are many empty cells. You also notice "200+" and "172.4\*" in the mass column. Computers are not good at separating different kinds of format; numbers and characters, for example. When it sees a character, everything else in the field (cell) becomes characters. Imagine doing an arithmetic operation; 29 + 145\*.  We need to be aware that you use only one type of format in each field. (This rule also applies when you are dealing with databases.)
+
+Another thing to consider when using Excel as your data editor; make your data into a rectangle file, meaning all rows have the same number of columns. (You will see this example soon and find out how frustrating this can be.)
+
+#Data formatting
+When using Excel as the middle step to prepare your data for more advanced analyses (or send data to someone to do analyses), make sure that your dataset is suitable for the computer to understand. This is a tedious step but necessary. It makes us think hard about the data - more importantly it makes us more aware about how we enter data in the field.  
+
+To see how this can make a big difference, we load the original and cleaned up data into R, after converting them into text files. The first one is a tab-deliminted text file whereas the second one is a comma delimited. Although there is no rule and you can use anything as a delimiter (a character separating one entry from another in each row), I recommend using a comma after years of coding. A comma is hardly ever used for anything else, especially in the US (in some countries, they use commas where we use periods), and visually understandable. (There are always exceptions and you will see an exception soon.) A tab, on the other hand, can be confused with a space. Although you should avoid having spaces in your data. 
+
+```{r CmData, cache=FALSE, echo=TRUE}
+datCmOriginal <- read.table("data/Growth data Nov 2008.txt", 
+                            header = TRUE,
+                            sep = "\t")
+
+datCmCleaned <- read.table("data/Growth data Nov 2008 cleaned.csv", 
+                           header = TRUE,
+                           sep = ",")
+
+summary(datCmOriginal)
+summary(datCmCleaned)
+
+```
+
+As you see, the weight variable has changed from a factor (a lot of levels corresponding to unique weight entries) to a numerical variable. 
+
+A factor variable can be considered as a grouping variable. Within a factor, you have different "levels", for example, experimental treatments, size groups, age groups, nesting beaches, sex, etc. Often you would use integers or letters to define these levels. When using integers, you will have to specify it is a factor variable because R treats all numbers to be numerical variables. To specify a particular variable is a factor variable, you use as.factor. We'll see this example later.
+
+>You noticed there are arrows (<-) and eqaul signs (=). You can use the equal sign in place of an arrow but not vice versa. I use arrows to be clear about the difference between "assign" and "equal".  You decide what you like...
+
+In the cleaned up data, you can compute simple statistics, such as average, for weight but not with the original one:
+
+```{r CmDataAnalysis1, cache=FALSE, echo=TRUE}
+mean(datCmOriginal$Weight, na.rm = TRUE)
+mean(datCmCleaned$Weight, na.rm = TRUE)
+```
+
+If I did not insert "na.rm = TRUE", or equivalently "na.rm = T", you would have seen "NA" as the result:
+
+```{r CmDataAnalysis2, cache=FALSE, echo=TRUE}
+mean(datCmCleaned$Weight)
+```
+
+This NA issue is a something to consider when your data contain one or more empty entries (they all become NAs in R). 
+
+The best practice is to enter NA in your data file _before_ importing to R. Be explicit!
+
+Also you may have noticed the spaces in the header line have been converted into periods.  You want to keep your header names to be distinctive, representative, but short. R (and many other programming languages) is case sensitive. So, it's good to get your own habit of mixing lower and upper cases. For example, you may use an uppercase letter for the first letter of each word to eliminate spaces, e.g., TurtleIdTag, DateCaught, etc. Finally, avoid including parentheses with units; this information can be stored into a meta file, e.g., another Excel sheet.  
+
+Let's create a script to conduct the regression analysis discussed earlier. Use File- New File - R Script or the new file icon on top left to create a new R script file. 
+
+![alt text](images/CreateScript.png)
+
+You should have "Untitled1" created. One thing we should always do is to anotate our code. We will forget what we have done within a few weeks (trust me...). I copied and pasted the four steps into this file, then added "#" at the begining of each line. In R, lines that start with "#" is treated as comment lines. In RStudio, you can use ctrl-Shift-C or Code-Comment/Uncomment Lines. 
+
+![alt text](images/NewScript_1.png)
+
+To save space on this document, I'll start inserting R code in the document without having screen shots. Colors and fonts are different when R code chunks are shown. 
+
+We will fill between the lines with necessary R code. Save it as a ".R" file. You can run an entire script file by "sourcing" it (click on "source" at the middle center). Alternatively, you can type "source('your\_file\_name.R')" at the command prompt. To execute just a line or several lines, you can select the lines then either click on "Run" at the top middle, copy the selected lines and paste it at the command prompt (multiple lines can be pasted), or Ctrl-Enter. If you assign output to a variable, results will be stored in the variable. When you type the variable name at the prompt, you will see part of the results. 
+
+
+```{r getDataIn, echo=TRUE}
+# 1. Import data
+datCmCleaned <- read.table("data/Growth data Nov 2008 cleaned.csv", 
+                           header = TRUE,
+                           sep = ",")
+```
+
+In R, a basic format of data is called "data frame". When you read data into R using read.table and its variants, your data will become a data frame. This is a very convenient format because each column can be extracted using the column name (and among other reasons). To look at what column names are available, 
+
+```{r dataFrame1, echo=TRUE}
+names(datCmCleaned)
+```
+
+You can assign the names to a variable:
+
+```{r dataFrame2, echo=TRUE}
+varNames <- names(datCmCleaned)
+```
+
+"varNames" is a vector of characters with four elements.
+
+To look at first several lines of the data file, 
+
+```{r headExample, echo=TRUE}
+head(datCmCleaned)
+```
+
+Note that results came back to the console because we didn't assign anything to the output of "head." You can change the number of lines that retrun from the head function by providing the second input (see ?head for more details). 
+
+```{r headExample2, echo=TRUE}
+head(datCmCleaned, n=3)
+```
+
+We also have "tail":
+```{r tailExample1, echo=TRUE}
+tail(datCmCleaned, n=5)
+```
+
+To see a summary of the data
+
+```{r summary1, echo=TRUE}
+summary(datCmCleaned)
+```
+Note Turtle.ID.Tag and Date.Caught columns returned something strange. These columns were treated as "factor" variables by R because they stored characters. To see what kind of data you have in the data frame, you can use the "str" function, which will be very useful when you spend more time using R. 
+
+```{r str1, echo=TRUE}
+str(datCmCleaned)
+```
+
+It returns what kinds of data are in the variable; it is a data.frame and contains two factor and two numeric variables. 
+
+You may want to see summary statistics of just one column, say the third column:
+
+```{r summary2, echo=TRUE}
+summary(datCmCleaned[,3])
+```
+
+These summary statistics can be useful in finding errors in your data. You can look for extreme values and NA's (should they be there?). 
+
+In R, data.frames and matrices are indexed by row, column, and other dimensions. So, [3,5] indicates row 3 and column 5. If you want to select the entire row or column, leave that space empty; [3,] for all columns for the third row and [,2] for all rows for the second column. You can also select multiple columns by combining numbers, e.g., [2, 1:4] for the second row and columns 1 through 4, [3, c(1, 3, 5)] for the third row and 1st, 3rd, and 5th columns. The "c" operator is used in R to combine multiple items. 
+
+The same thing can be accomplished by using the column name, preceded by '$':
+
+```{r summary3, echo=TRUE}
+summary(datCmCleaned$SCL)
+```
+
+Another useful function with respect to data.frame is "subset". It is used to extract "subset" of your data.frame. For example, you may want to look at turtles that are longer than 60 cm SCL. 
+
+```{r summary4, echo=TRUE}
+largeTurtles <- subset(datCmCleaned, SCL > 60)
+summary(largeTurtles)
+```
+
+In the first line, I extracted all SCL > 60 cm and stored them into a new variable (largeTurtles), then looked at the summary of the selected. This could have been accomplisehd in one line:
+
+```{r summary5, echo=TRUE}
+summary(subset(datCmCleaned, SCL > 60))
+```
+
+The inside function is executed first. Be careful making things complicated by combining multiple commands in one line. Unless you are 100% sure what's happening at each step, it's best to separate them into different lines first. That way, you can check what's happening at every step. 
+
+You may have noticed there were 140 (Other) Turtle.ID.Tag "levels" when we looked at the summary of the subset (largeTurtles). Were there that many turtles that were >60 cm? Take a look at the size of this variable:
+
+```{r summary8, echo=TRUE}
+dim(largeTurtles)
+```
+
+That many! How many did we have to begin with?
+
+```{r summary9, echo=TRUE}
+dim(datCmCleaned)
+```
+
+Ok. I suppose... Let's make sure we are not fooled by R. Make a histogram of SCL and find the smallest values for largeTurtles and datCmCleaned
+
+```{r summaryPlot1, echo=TRUE}
+hist(largeTurtles$SCL, xlab = "SCL (cm)", main = "Turtles > 60cm SCL")
+min(largeTurtles$SCL, na.rm=T)
+min(datCmCleaned$SCL, na.rm=T)
+```
+
+Now we know what subset did and trust the results!
+
+You may want to look at how many times one turtle was caught and how it increased in size. To extract just one turtle, you can use "==":
+```{r summary6, echo=TRUE}
+turtle3030 <- subset(datCmCleaned, Turtle.ID.Tag == "3030")
+turtle3030
+```
+
+Equivalently, but with a few more key strokes:
+```{r summary7, echo=TRUE}
+turtle3030_1 <- datCmCleaned[datCmCleaned$Turtle.ID.Tag == "3030",]
+turtle3030_1
+```
+
+Even though "3030" seems like a number, it is stored as a string of characters in the data frame. Consequently, I used the quotation marks around 3030. It turned out the turtle was caught 8 times over the years. 
+
+We can look at how it grew over time. Let's see if we can plot this.
+
+```{r plot_turtleGrowth, echo=TRUE}
+plot(turtle3030$Date.Caught, turtle3030$SCL,
+     xlab = "Date", ylab = "SCL (cm)")
+```
+
+It doesn't look so good, does it? Note Date.Caught is in the mm/dd/yyyy format and R doesn't seem to understand it. We need to tell R it is a date column. 
+
+```{r plot_turtleGrowth2, echo=TRUE}
+turtle3030$Date <- strptime(turtle3030$Date.Caught, "%m/%d/%Y")
+plot(turtle3030$Date, turtle3030$SCL,
+     xlab = "Date", ylab = "SCL (cm)",
+     type = "b", bty = "l")
+```
+
+That looks a lot better! There are a lot more to time format but we are not getting into them. Look at the help file for strptime for more information. 
+
+Now you may be thinking "how can we count how many times each turtle was caught?" How do we do that? Let's make this a quiz. It should take you a few minutes to surf the Web and find an answer! There are many ways to answer this question. 
+
+Hint: you may have to install a new package. 
+
+Some analytical tools don't like missing values, or NAs. We can eliminate all rows with at least one NA by using na.omit:
+
+```{r summary10, echo=TRUE}
+datCmNoNA <- na.omit(datCmCleaned)
+summary(datCmNoNA)
+dim(datCmNoNA)
+```
+
+Many rows, namely ```r dim(datCmCleaned)[1] - dim(datCmNoNA)[1]``` rows were removed by having at least one NA. Another quiz; how did I figure out the number, i.e., 70? 
+
+Speaking of NAs, sometimes, you want to know where NAs occur in your data. For example, you may want to know which turtles didn't have SCL measurements. There is a function to find where NAs occur; is.na. "is.na" will return TRUE and FALSE depending on whether or not each entry is an NA. For example,
+
+```{r isna1, echo=TRUE}
+is.na(datCmCleaned[1,])
+```
+
+To select turtles with no SCL measurements, first we find which ones have NAs in SCL, then select the IDs that correspond to is.na = TRUE:
+
+```{r isna2, echo=TRUE}
+idxNA <- is.na(datCmCleaned$SCL)
+idSclNA <- datCmCleaned$Turtle.ID.Tag[idxNA]
+```
+
+Of course, you could have done that in one line: 
+
+idSclNA <- datCmCleaned$Turtle.ID.Tag[is.na(datCmCleaned$SCL)]. 
+
+Here, we used TRUE/FALSE as an index to select which ones to pick.    
+
+```{r isna3, echo=TRUE}
+length(idSclNA)
+idSclNA
+```
+
+There were 24 of them. Is "Barge" an ID for a turtle? It also returned all available levels (IDs). 
+
+What if you want to select those that were not NA in SCL? We use the "not" operator (!):
+
+```{r isna4, cache=FALSE, echo=TRUE}
+idxNotNA <- !is.na(datCmCleaned$SCL)
+idSclNotNA <- datCmCleaned$Turtle.ID.Tag[idxNotNA]
+#idSclNotNA # I don't show this because there are so many. 
+```
+
+Let's practice using as.factor. We'll make a factor variable for small and large turtles; small turtles (<60cm) gets level 1 and large turtles (>= 60 cm) gets level2. First we create an empty vector of a correct length, enter 1s and 2s in appropriate places, then conver the vector into a factor while putting it into the data.frame.
+
+```{r asFactor1, echo=TRUE}
+# create a new vector
+temp_vector <- vector(mode = "integer", length = dim(datCmCleaned)[1])
+# put 1s and 2s into the appropriate places:
+temp_vector[datCmCleaned$SCL < 60] <- 1
+temp_vector[datCmCleaned$SCL >= 60] <- 2
+# make sure NAs stay NAs
+temp_vector[is.na(datCmCleaned$SCL)] <- NA
+# Then put it in to the data.frame while converting it into a factor
+datCmCleaned$size <- as.factor(temp_vector)
+str(datCmCleaned)
+```
+
+#Exercise
+Let's get more datasets into the workspace and practice what we have learned so far. Here, we will also learn the importance of data formatting and frustrations of data analysts! :) 
+
+First, let's take a look at Cali's data: Bone_SI.csv. You can open it within RStudio. Looks nicely formatted so bring it in to R and take a look at the first several lines and its summary statistics.
+
+```{r Cali_1, echo=T}
+boneData <- read.table("data/Bone_SI.csv", sep = ",", header = TRUE)
+head(boneData)
+summary(boneData)
+```
+
+1. What are the sample size, mean Est\_CCL, and standard error of Est\_CCL for turtles that were sampled between Year 2003 and 2008?
+```{r Cali_11, echo=FALSE}
+dat_1 <- subset(boneData, Year >= 2003 & Year <= 2008)
+sampleSize <- sum(!is.na(dat_1$Est_CCL))
+mean_CCL <- mean(dat_1$Est_CCL, na.rm=T)
+SE_CCL <- sd(dat_1$Est_CCL, na.rm=T)/sqrt(sampleSize)
+
+dat_2 <- subset(boneData, Year >= 2003 | Year <= 2008)
+```
+
+
+
+2. What is the mean Est\_Age for LAG\_A? 
+```{r Cali_12, echo=FALSE}
+dat_2 <- subset(boneData, LAG == "LAG_A")
+mean_Age <- mean(dat_2$Est_Age, na.rm=T)
+```
+
+Next, look at Stranding Data for Analysis 12Mar2015.xlsx from Robin. This is how we usually get data - out from a database. Note we will run into some problems because of ... If you are planning on using R as your statistical engine, you need to keep in mind what goes into your data. 
+
+1. Export data in the "All" tab into a text file, any delimiter is fine.
+2. Bring in the data into R. (Did you run into any issues? What went wrong?)
+
+#Plotting figures
+R provides basic figures, which are publication quality. In recent years, however, the ggplot package (ggplot2) has gained some momentum. It has many options but the learning curve is a little steep. We'll look at both of them. **A lot** of information is available online on plotting in R. I search Google many times every day to get things done right. If you have a question, it is very likely someone has asked the same question online in the past. 
+
+Back to Cali's data and make a simple scatter plot.
+
+```{r Cali_2, echo=F}
+# we are going to read Cali's data file here: 
+boneData <- read.table("data/Bone_SI.csv", 
+                       sep = ",", 
+                       header = TRUE)
+#summary(boneData)
+```
+
+```{r plot1_Cali, echo=TRUE}
+plot(boneData$d15N, boneData$d13C, 
+     pch = 25,
+     xlab = "d15N", ylab = "d13C",
+     main = "d15N vs. d13C",
+     bg = "green",
+     col = "coral1")
+```
+
+Look for help in "points" (?points at the prompt (>)) for how you can change markers, colors, size, etc. Colors are defined either by name, a character string, or a numeric vector of length three indicating red, green, and blue values. A great cheat sheet can be found here: http://research.stowers-institute.org/efg/R/Color/Chart/ (I also put this file in the shared Google drive). You can also change the transparency of markers by setting the "alpha" value. To do that, however, the color has to be defined in the rgb format as the following:
+
+```{r plot2_Cali, echo=TRUE}
+plot(boneData$d15N, boneData$d13C, 
+     pch = 19,           # this is triangle
+     xlab = "d15N", ylab = "d13C",
+     main = "d15N vs. d13C",
+     col = rgb(255, 114, 86, 
+               alpha = 0.4*255, # opaque 
+               maxColorValue = 255)
+     )
+#l <- 1
+#while (l < 2) {k = 1}
+```
+
+The rgb function expects input values between 0 and 1, unless you define the maximum value through the maxColorValue input. Because the cheat sheet uses the maximum value of 255, I set the maxColorValue to 255 then changed the alpha (transparency) value accordingly. 
+
+You can change the size of each point by whatever scale you want to use, e.g., age:
+
+```{r plot4_Cali, echo=TRUE}
+plot(boneData$d15N, boneData$d13C, 
+     pch = 19, 
+     cex = boneData$Est_Age,  # size of each point
+     xlab = "d15N", ylab = "d13C",
+     main = "d15N vs. d13C",
+     col = rgb(155, 48, 255, 
+               alpha = 0.4*255, 
+               maxColorValue = 255))
+```
+
+A little too big... Let's scale the age with its average. Also, we'll make 13 and 15 to be subscripts. Yes, getting fancier! 
+
+```{r plot5_Cali, echo=TRUE}
+scaledAge <- boneData$Est_Age / mean(boneData$Est_Age, na.rm = TRUE)
+plot(boneData$d15N, boneData$d13C, 
+     pch = 19, 
+     cex = scaledAge,
+     xlab = expression(d[15]*"N"), 
+     ylab = expression(d[13]*"C"),
+     main = expression(d[15]*"N vs. d"[13]*"C"),
+     col = rgb(72, 118, 255, 
+               alpha = 0.4*255, 
+               maxColorValue = 255),
+     bty = "l")
+
+plot(boneData$d15N, boneData$d13C, 
+     pch = 19, 
+     cex = scaledAge,
+     xlab = expression(d^{15}*"N"), 
+     ylab = expression(d^{13}*"C"),
+     main = expression(d^{15}*"N vs. d^{13}*C"),
+     col = rgb(72, 118, 255, 
+               alpha = 0.4*255, 
+               maxColorValue = 255),
+     bty = "l")
+
+```
+
+#ggplot2
+ggplot2 is an incredibly useful and intuitive (?!) graphing package. It is written by Hadley Wickham who has also written other useful packages such as 'dplyr' (manipulating data), 'tidyr' (for tidying data), and 'lubridate' (for dates and times).
+
+There are two primary components to the ggplot command. The first is to define the data and the visual aesthetic, and the other defines details of plots, such as font size, background color, axis labels, etc..   
+
+Although we don't have to do this here, we do it to practice creating a data.frame. (We could have used the boneData data.frame instead.)
+```{r plot3_Cali, echo=TRUE}
+library(ggplot2)
+df1_Cali <- na.omit(data.frame(d15N = boneData$d15N, 
+                               d13C = boneData$d13C))
+plot1 <- ggplot(data = df1_Cali,            # Define which data frame to use
+                aes(x = d15N, y = d13C)) +  # Select x and y variables
+  geom_point(colour = "coral1",             # Define figure type (scatter plot)
+             size = 4,                      # Define size of each point
+             alpha = 0.6) +                 # Define transparency
+  xlab("d15N") + ylab("d13C") +             # Set x and y axis labels
+  theme(axis.text = element_text(size = 12))  # Set text font size
+
+print(plot1)
+```
+
+To change the size of points in ggplot, we can do the following. It deals with "age" better with the default setting than the R's plot function. 
+
+```{r plot6_Cali, echo=TRUE}
+# create a data frame
+df2_Cali <- na.omit(data.frame(d15N = boneData$d15N, 
+                               d13C = boneData$d13C,
+                               age = boneData$Est_Age))
+plot2 <- ggplot(data = df2_Cali,             # define a dataset
+                aes(x = d15N, y = d13C)) +   # define x and y variables
+  geom_point(colour = "cyan2",               # define the color
+             aes(size = age),                # size is proportional to age
+             alpha = 0.6) +                  # transparency
+  xlab(expression(d[15]*"N")) +              # x label using subscript
+  ylab(expression(d[13]*"C")) +              # y label using subsctipt
+  theme(axis.text = element_text(size = 12)) # define text font size
+
+print(plot2)
+```
+
+You can move the legend to wherever you like by providing a vector of length 2 with numbers between 0 and 1. The first element is for the x axis and the second element is for the y axis, like so:
+
+```{r plot7_Cali, echo=TRUE}
+
+plot3 <- ggplot(data = df2_Cali, 
+                aes(x = d15N, y = d13C)) + 
+  geom_point(colour = "firebrick1", 
+             aes(size = age), 
+             alpha = 0.6) + 
+  xlab(expression(d^{15}*"N")) +     # this time with superscripts
+  ylab(expression(d^{13}*"C")) + 
+  theme(axis.text = element_text(size = 12),
+        legend.position = c(0.5, 0.3)) + 
+  theme_bw()
+
+print(plot3)
+```
+
+Let's look at different kinds of plots. You may want to have whisker plots of different groups. For example, using Cali's data again. :
+
+```{r plot8_Cali, echo=TRUE}
+df3_Cali <- na.omit(data.frame(d15N = boneData$d15N, 
+                               d13C = boneData$d13C,
+                               age = boneData$Est_Age,
+                               lag = boneData$LAG))
+plot4a <- ggplot(data = df3_Cali, 
+                aes(x = lag, y = age)) + 
+  geom_boxplot() + 
+  xlab("LAG") + 
+  ylab("Estimated age") + 
+  theme(axis.text = element_text(size = 12)) + 
+  theme_bw()    # changes the background. 
+
+print(plot4a)
+```
+
+Can we rotate the tick marks a little and remove the grid lines? To do this in R plots, we need to clear the axis tick labels and add in text (see http://www.ats.ucla.edu/stat/r/faq/angled_labels.htm). In ggplot, things are a bit quicker:
+
+```{r plot9_Cali, echo=TRUE}
+df3_Cali <- na.omit(data.frame(d15N = boneData$d15N, 
+                               d13C = boneData$d13C,
+                               age = boneData$Est_Age,
+                               lag = boneData$LAG))
+plot4 <- ggplot(data = df3_Cali, 
+                aes(x = lag, y = age)) + 
+  geom_boxplot() + 
+  xlab("") +                            # remove the xaxis label
+  ylab("Estimated age") + 
+  theme(axis.text = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1,
+                                   vjust = 0.5)) + 
+  theme_classic()   # remove grid lines and no background color
+
+print(plot4)
+```
+
+If you want to see raw data points, you can add them using geom_point. Notice the layering concept of ggplot2; we created box plots first, then added (layered) scatter plot on top of them.  
+
+```{r plot11_Cali, echo=TRUE}
+plot5 <- ggplot(data = df3_Cali, 
+                aes(x = lag, y = age)) + 
+  geom_boxplot() + geom_point() +
+  xlab("") + 
+  ylab("Estimated age") + 
+  theme(axis.text = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1,
+                                   vjust = 0.5)) 
+
+print(plot5)
+```
+
+We can add a bit of "jitter" so all data points can show up:
+
+```{r plot10_Cali, echo=TRUE}
+plot5 <- ggplot(data = df3_Cali, 
+                aes(x = lag, y = age)) + 
+  geom_boxplot() + geom_jitter() +
+  xlab("") + 
+  ylab("Estimated age") + 
+  theme(axis.text = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1,
+                                   vjust = 0.5)) + 
+  theme_bw()
+
+print(plot5)
+```
+
+Someone may ask, "Can you remove 'LAG\_' from tick labels?" There are many ways to get this done. Some are fancier than others. Basically, you want to have another factor variable in the data.frame with just As, Bs, etc. I will show you three ways to do this. 
+
+1. Let's create an empty vector, store necessary letters into the correct places, then put it into the data.frame.  For example,
+
+```{r newLagFactor, echo=TRUE}
+newVec <- vector(mode = "character", 
+                 length = dim(df3_Cali)[1])
+newVec[df3_Cali$lag == "LAG_A"] = "A"
+newVec
+```
+
+But it's tedious to repeat this 9 times. Each time, we just have to change what you are looking for, i.e., "LAG\_A", "LAG\_B", etc., to "A", "B", etc. 
+
+2. Let's use a for-loop. For-loops are used to repeat a same operation multiple times. Take a look at the beginning and the end of the data.frame to check if we did it right.
+
+```{r newLagFactor2, echo=TRUE}
+newVec <- vector(mode = "character", length = dim(df3_Cali)[1])
+levelsLag <- levels(df3_Cali$lag)
+newLevels <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
+for (i in 1:length(levelsLag)){
+  newVec[df3_Cali$lag == levelsLag[i]] = newLevels[i]
+}
+newVec
+df3_Cali$lag2 <- newVec
+head(df3_Cali, n = 10)
+tail(df3_Cali, n = 10)
+```
+
+Seems like it did the job. 
+
+3. Some search on the Internet resulted in the following; maybe a little bit more elegant... This requires a diffrent package called "reshape2".
+
+```{r newLagFactor3, echo=TRUE}
+library(reshape2)
+newcols <- colsplit(string = df3_Cali$lag, # which factor to split
+                    pattern = '_',         # what to split on
+                    names = c("a", "Lag")) # new names for splitted variables
+df3_Cali$lag3 <- newcols$Lag
+head(df3_Cali)
+```
+
+Then make a plot again. 
+
+```{r plot12_Cali, echo=TRUE}
+plot6 <- ggplot(data = df3_Cali, 
+                aes(x = lag3, y = age)) + 
+  geom_boxplot() + geom_jitter() +
+  xlab("LAG") + 
+  ylab("Estimated age") + 
+  theme(axis.text = element_text(size = 12)) 
+
+print(plot6)
+```
+
+There are so many other things you can do with ggplot. Google what you want to do and you will find a lot of solutions. 
+
+For another example, we'll look at how to plot two series (e.g., temperature and pH) that share a variable (date/time). 
+
+```{r two_y_axes, echo=TRUE}
+rm(list=ls())
+library(ggplot2)
+library(grid)
+library(plyr)
+library(dplyr)
+library(gtable)
+df.temp_pH <- read.csv(file = "data/Sample_SeaFET_data.csv")
+head(df.temp_pH)
+summary(df.temp_pH)
+
+```
+
+When you look at the raw data in a text editor, you notice that variable names were "Time Stamp", "Temperature deg. C", and "pH". These were useful in Excel as they make sense to you. But note what happened to them when you bring it into R. It added periods where spaces were. To minimize surprises, try to avoid using special characters and spaces in column headers. For example, I would have used "Date_Time", "Temp", or "TempC", and "pH".  
+
+Note also that when you look at the structure of the data frame, the date time column is treated as a factor variable and NOT a date variable. So, we need to either change it or create another variable before plotting. 
+
+``` {r change_date, echo=T}
+df.temp_pH$date <- strptime(df.temp_pH$Time.Stamp, 
+                            format = "%m/%d/%y %H:%M")
+
+# rename the variables because they are too long
+colnames(df.temp_pH) <- c("Time1", "Temp", "pH", "Date")
+# got the following code from here: https://gist.github.com/tomhopper/faa24797bb44addeba79
+plot1 <- ggplot(data = df.temp_pH, 
+                aes(x = Date, y = Temp)) + 
+  geom_line(color = "blue") + 
+  xlab("Date") + 
+  ylab("Temperature (C)") + 
+  theme(axis.text = element_text(size = 12)) 
+#print(plot1)
+plot2 <- ggplot(data = df.temp_pH, 
+                aes(x = Date, y = pH)) +
+  geom_line(color = "red") + 
+  xlab("Date") + 
+  ylab("pH") + 
+  theme(axis.text = element_text(size = 12)) +
+#plot2
+grid.newpage()
+grid.draw(rbind(ggplotGrob(plot1), 
+                ggplotGrob(plot2), size = "last"))
+
+grid.draw(cbind(ggplotGrob(plot1), 
+                ggplotGrob(plot2), size = "last"))
+
+```
+
+You may want to plot two time series in one plot. This turned out to be more difficult than I thought. A bit of Google search returned the following function. I cleaned up the original a little. 
+
+``` {r fcn_dualPlot, echo=T}
+# found here: https://gist.github.com/jslefche/e4c0e9f57f0af49fca87
+ggplot_dual_axis <- function(plot1, plot2, which.axis = "x") {
+  grid.newpage()
+  
+  # Increase right margin if which.axis == "y"
+  if(which.axis == "y") plot1 <- plot1 + 
+      theme(plot.margin = unit(c(0.7, 1.5, 0.4, 0.4), "cm"))
+  
+  # Extract gtable
+  g1 <- ggplot_gtable(ggplot_build(plot1))
+  g2 <- ggplot_gtable(ggplot_build(plot2))
+  
+  # Overlap the panel of the second plot on that of the first
+  pp <- c(subset(g1$layout, name == "panel", se = t:r))
+  g <- gtable_add_grob(g1, 
+                       g2$grobs[[which(g2$layout$name == "panel")]], 
+                       pp$t, pp$l, pp$b, pp$l)
+  
+  # Steal axis from second plot and modify
+  axis.lab <- ifelse(which.axis == "x", "axis-b", "axis-l")
+  ia <- which(g2$layout$name == axis.lab)
+  ga <- g2$grobs[[ia]]
+  ax <- ga$children[[2]]
+    
+  # Switch position of ticks and labels
+  if(which.axis == "x") ax$heights <- rev(ax$heights) 
+  else ax$widths <- rev(ax$widths)
+  
+  ax$grobs <- rev(ax$grobs)
+  
+  if(which.axis == "x") {
+    ax$grobs[[2]]$y <- ax$grobs[[2]]$y - unit(1, "npc") + 
+      unit(0.15, "cm") 
+  } else {
+    ax$grobs[[1]]$x = ax$grobs[[1]]$x - unit(1, "npc") + 
+      unit(0.15, "cm")
+  }
+      
+  # Modify existing row to be tall enough for axis
+  if(which.axis == "x") g$heights[[2]] <- g$heights[g2$layout[ia,]$t]
+  
+  # Add new row or column for axis label
+  if(which.axis == "x") {
+    g <- gtable_add_grob(g, ax, 2, 4, 2, 4) 
+    g <- gtable_add_rows(g, g2$heights[1], 1)
+    g <- gtable_add_grob(g, g2$grob[[6]], 2, 4, 2, 4)
+  } else {
+    g <- gtable_add_cols(g, g2$widths[g2$layout[ia, ]$l], 
+                         length(g$widths) - 1)
+    g <- gtable_add_grob(g, ax, pp$t, 
+                         length(g$widths) - 1, pp$b) 
+    g <- gtable_add_grob(g, g2$grob[[7]], pp$t, 
+                         length(g$widths), pp$b - 1)
+  }
+  
+  # Draw it
+  grid.draw(g)
+  
+}
+```
+
+Then use this new function: 
+``` {r two_series, echo=T}
+# You need to do a bit of tricks to the second plot;
+plot2 <- ggplot(data = df.temp_pH,       # define dataframe
+                aes(x = Date, y = pH)) + # define aesthetic
+  geom_line(color = "red") +             # line color
+  xlab("Date") +                         # axis labels
+  ylab("pH") + 
+  theme(axis.text = element_text(size = 12)) +
+  theme_bw() %+replace% 
+  theme(panel.background = element_rect(fill = NA),
+        panel.grid.major.x=element_blank(),
+        panel.grid.minor.x=element_blank(),
+        panel.grid.major.y=element_blank(),
+        panel.grid.minor.y=element_blank())
+
+# then use the function above:
+ggplot_dual_axis(plot1, plot2, 'y')
+```
+
+Here is another approach: 
+
+```{r two_series2, echo=T}
+# see here: http://heareresearch.blogspot.com/2014/10/10-30-2014-dual-y-axis-graph-ggplot2_30.html
+library(scales) 
+library(grid)
+library(gtable)
+library(ggplot2)
+library(plyr)
+
+# plot1 and plot2 come from above
+g1 <- ggplot_gtable(ggplot_build(plot1))
+g2 <- ggplot_gtable(ggplot_build(plot2))
+
+pp <- c(subset(g1$layout, name=="panel", se=t:r))
+g <- gtable_add_grob(g1,
+                     g2$grobs[[which(g2$layout$name=="panel")]],
+                     pp$t, pp$l, pp$b, pp$l)
+
+ia <- which(g2$layout$name=="axis-l")
+ga <- g2$grobs[[ia]]
+ax <- ga$children[[2]]
+ax$widths <- rev(ax$widths)
+ax$grobs <- rev(ax$grobs)
+ax$grobs[[1]]$x <- ax$grobs[[1]]$x - unit(1, "npc") + unit(0.15, "cm")
+g <- gtable_add_cols(g, 
+                     g2$widths[g2$layout[ia, ]$l], 
+                     length(g$widths) - 1)
+g <- gtable_add_grob(g, ax, pp$t, 
+                     length(g$widths) - 1, pp$b)
+
+grid.draw(g)
+
+```
+
+The author of ggplot2 apparently disagrees philosophically with having two y axes. I can understand that. 
+
+#Plotting examples for genetic analyses
+Here we add to our graphing repetoire with a few graphs that are common to genetic data exploration, and learn/review how to generate practice datasets and efficiently manipulate our data to be in the format that ggplot needs.
+
+Haplotype allelic Frequency bar and pie charts
+
+First we need to load the libraries if they are not already. You may install these if you don't already have them.
+```{r haplo_load, echo=T}
+rm(list=ls())
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+Then, let's generate data to play with:
+```{r haplo_freq, echo=T}
+set.seed(8) #set the seed number for the random number generator so results are reproducible
+hap <- c('CcP1.1','CcP2.1','CcP2.2','CcP2.3') #create list of haplotypes
+#repeat command, create a list of site names, each 10 times 
+#create sequence of numbers which identifies the samples
+#randomly pick from above list, 40 times
+data<-data.frame(location = rep(c('Mainland MU', 
+                                  'Yakushima MU',
+                                  'Ryukyu MU',
+                                  'Muroto bycatch'), 
+                                each=10), 
+                 id = seq(1:40), 
+                 haplotype=sample(hap,40, replace=T))
+```
+
+Then we can check the structure and summary of our data to make sure it is what we want:
+```{r haplo_str, echo=T}
+str(data) #examine structure of dataframe
+summary(data) #summary stats of dataframe
+head(data)#first six rows of dataframe
+```
+
+This dataset is by individual, typically what we'd have in a raw data file. But we may want to instead have summarized data for different graphs or analyses. We can use the 'count' function in dplyr to create a frequency table of our data.
+
+```{r haplo_count, echo=T}
+summary.data <- count(data, location, haplotype, sort=T) 
+head(summary.data)
+```
+
+Another way that uses layered functions & adds a proportional variable. The pipe operator (%>%) in the dplyr package is **VERY** powerful!
+
+```{r haplo_prop, echo=T}
+# Here, using the data dataframe, group data by location and haplotype
+# then count the grouped data and create a new frequency variable:
+summary.data2 <- data %>%
+  group_by(location, haplotype) %>% #define groups
+  summarize(n=n()) %>%             #summarize counts the occurrences
+  mutate(freq=n/sum(n))            #mutate creates a new variable that we call 'freq' that is the proportion given each group
+summary(summary.data2)
+head(summary.data2)
+```
+
+Now we can use these summarized data to make stacked bar graphs
+```{r haplo_stackedbar, echo=T}
+ggplot(summary.data, 
+       aes(x=location, y=n, fill=haplotype)) + 
+  geom_bar(stat='identity') #counts
+
+ggplot(summary.data2, 
+       aes(x=location,y=freq, fill=haplotype)) + 
+  geom_bar(stat='identity')#proportions
+
+a <- ggplot(summary.data2,
+            aes(x=location, y=freq, fill=haplotype)) + 
+  geom_bar(stat='identity')#proportions
+
+# Add a layer to the plot above
+b <- a + theme_bw() + 
+  scale_fill_manual(values=c("blue", "forestgreen", "grey70", "purple")) +
+  theme(axis.title.x = element_text(face="bold", 
+                                    colour="black", 
+                                    size=20),
+        axis.text.x  = element_text(angle=30, 
+                                    vjust=0.5, 
+                                    size=14),
+        axis.title.y = element_text(face="bold", 
+                                    colour="black", 
+                                    size=20),
+        axis.text.y  = element_text(angle=90, 
+                                    vjust=0.5, 
+                                    size=14)) +
+  guides(fill=guide_legend(title="Haplotype")) + 
+  xlab("Location") + ylab("Proportion")
+print(b)
+```
+
+The difference between plotting the counts vs. the proportions doesn't seem that important here, because we have roughly the same sample sizes among groups. But, this can really change the way the data looks if that is not the case so it may be more desirable to show one or the other form.
+
+Now let's try pie charts
+```{r haplo_pie1, echo=T}
+ggplot(summary.data2, aes(x=location, y=freq, fill=haplotype)) + 
+  geom_bar(stat='identity')+
+  coord_polar(theta = "y", start=0)
+```
+
+Yikes. That's not perhaps what we were looking for. But, you'll notice that ggplot doesn't do pie charts very well (a decision they made intentionally)
+```{r haplo_pie2, echo=T}
+p <- ggplot(summary.data2, aes(x=1,y=freq,fill=haplotype)) + 
+  geom_bar(stat="identity") + 
+  facet_grid(.~location)+coord_polar(theta='y')
+
+p <- p +
+  geom_bar(stat="identity", color='black')+  # black border around pie slices
+  guides(fill=guide_legend(override.aes=list(colour=NA)))+ # remove black diagonal line from legend
+  theme(axis.ticks=element_blank(),  # the axis ticks
+        axis.title=element_blank(),  # the axis labels
+        axis.text.y=element_blank()) # the 0.75, 1.00, 1.25 labels.
+p #can play around with formatting, etc. to get #s, labels, colors how you want
+```
+
+N.B., You also use base plotting in R to make Pie Charts, we have code for this if people want (we can go over separately another day)
+
+Now, let's try using some realistic data for an extended exercise. 
+```{r genetic_real, echo=T}
+mtdna <- read.csv('data/mtDNA_freq.csv')
+summary(mtdna)
+str(mtdna)     # data is in wide format
+
+#'gather' in "tidyr" converts wide to long format
+mtdna.long <- gather(mtdna, "haplotype", "n", 2:9) 
+
+a <- ggplot(mtdna.long, 
+       aes(x = Location, y = n, fill = haplotype)) + 
+  geom_bar(stat = 'identity') +
+  scale_fill_brewer(palette = "Spectral") + 
+  theme_bw()  #play around with the themes and color scales as you want...
+
+b <- a + theme_bw() + 
+  theme(axis.title.x = element_text(face="bold", 
+                                    colour="black", 
+                                    size=16),
+        axis.text.x  = element_text(angle=30, 
+                                    vjust=0.5, 
+                                    size=12),
+        axis.title.y = element_text(face="bold", 
+                                    colour="black", 
+                                    size=16),
+        axis.text.y  = element_text(angle=0, 
+                                    vjust=0.5, 
+                                    size=12)) +
+  guides(fill=guide_legend(title="Haplotype")) + 
+  xlab("Location") + ylab("Count")
+print(b)
+```
+
+Next, we may want to make bar charts with error bars for Mixed Stock Analyses (MSA) results.  
+
+In ggplot, you can change the formatting to be almost anything you want, but this can sometimes make the code long and more complex. So if there's an error, it can be challenging to find the error when it's all lumped together. To help with this, I tend to follow the structure of first setting up my plot with the basics to make sure it's working correctly, and then I layer the formatting I want on top of that. 
+
+So let's first do a simple example.
+```{r mixed_stock, echo = T}
+MSA<-read.csv("data/MSA_Ccar.csv")
+str(MSA)
+bar1<-ggplot(MSA, 
+             aes(x=Nesting.Stock, y=Mean, fill=Weight))  +
+  geom_bar(colour="black",
+           stat="identity", 
+           position=position_dodge(), 
+           width=0.7)+ 
+  theme_bw()+  
+  geom_errorbar(aes(ymin=Mean-SD, ymax=Mean+SD), 
+                width=0, 
+                position=position_dodge(0.7))
+
+# STATISTICAL NOTE: it's better to plot SE not SD here. SD is the variability in your data. SE is the uncertainty in the mean - in a statistical analysis, you are almost always interested in making an inference about the mean values, not the data variability. SE is estimated by SD/sqrt(n). An additional bonus for using SE instead of SD is that SE is always less than SD.  
+
+bar2 <- bar1+ theme(axis.title.x = element_text(face="bold", 
+                                                colour="black", 
+                                                size=16),
+                    axis.text.x  = element_text(angle=0, 
+                                                vjust=0.5, 
+                                                size=12),
+                    axis.title.y = element_text(face="bold", 
+                                                colour="black", 
+                                                size=16),
+                    axis.text.y  = element_text(angle=90, 
+                                                vjust=0.5, 
+                                                size=12),
+                    legend.title = element_blank(), 
+                    legend.position=c(0.07,0.95)) + 
+  xlab("Nesting Stock") + 
+  ylab("Estimated Contribution") +
+  scale_fill_manual(values=c("blue","forestgreen"))
+
+print(bar2) #change colors, legend positioning etc as desired...
+```
+
+Now make your own, slightly more complex MSA plot (MJ's data)
+```{r MJanalysis, echo=TRUE}
+
+MJ <- read.csv("data/MJ_models_combined.csv", header=TRUE)
+str(MJ)
+
+bar1 <- ggplot(MJ, aes(x=STOCK,y=MEAN, fill=Model))  +
+  geom_bar(colour="black", 
+           stat="identity",
+           position=position_dodge(),
+           width=0.7)+ 
+  theme_bw()+  
+  geom_errorbar(aes(ymin=MEAN-SD, ymax=MEAN+SD), width=0, 
+                position=position_dodge(0.7))
+
+bar2<-bar1 + theme(axis.title.x = element_text(face="bold", 
+                                               colour="black", 
+                                               size=18),
+                  axis.text.x  = element_text(angle=70, 
+                                              vjust=0.5, 
+                                              size=14),
+                  axis.title.y = element_text(face="bold", 
+                                              colour="black", 
+                                              size=18),
+                  axis.text.y  = element_text(angle=90, 
+                                              vjust=0.5, 
+                                              size=14),
+                  legend.title=element_blank(), 
+                  legend.position=c(0.9,0.85))+
+  xlab("Nesting Stock") + 
+  ylab("Estimated Contribution") + 
+  scale_fill_manual(values=c("blue","forestgreen"))+
+  coord_cartesian(ylim=c(-0.01,0.78))#sets the axis limits
+print(bar2)
+
+#Can also save the figure directly to file:
+ppi<-300 #define a pixels per inch term
+png("Figure1.png", 
+    width=10*ppi, 
+    height=6*ppi, 
+    res=ppi) #define your png file
+bar2 #create the plot
+dev.off() #stop!
+```
+
+Finally, we may want to look at the allele frequencies as part of our data exploration. When we have multiple loci with many alleles (e.g., microsatellites), it can be laborious to make the graphs one by one. Faceting is a great option for this scenario, because it allows you to quickly make groups of graphs by a certain factor. Here I use the same style of input data as you would have prepared for StrataG analyses.
+```{r MSat_AlleleFreq, echo=T}
+#3. MSat Allele Freq graph####
+Msat.Ei.geno <- read.csv("data/EiMsatData020915.csv") 
+Msat.Ei.strata <- read.csv("data/Ei_Msat_strata.csv") #LABID and population from analysis set.
+Msat_Ei <- merge(Msat.Ei.geno,Msat.Ei.strata)
+Msat_Ei_subset <- Msat_Ei[,c(52,2:13)]
+str(Msat_Ei_subset)
+Ei_long <- gather(Msat_Ei_subset,
+                  "Locus",
+                  "allele_ID",2:13)
+
+# "separate" in tidyr separates one column into mulitple columns
+# Take Ei_long data frame, separate the locus variable into two 
+# variables "Locus" and "allele", which are separated by "_"
+Ei_long2 <- Ei_long %>%
+  separate(Locus, into=c("Locus","allele"), sep="_")
+
+hist<-ggplot(Ei_long2, aes(x=allele_ID,fill=Population)) +
+  geom_histogram(binwidth = 5) + theme_bw() +
+  theme(axis.text.x  = element_text(angle=70, vjust=0.5,size=10))
+
+hist#this puts all our Locus together-not what we want
+
+hist2<-hist + facet_wrap(~Locus, scales="free")
+#the scales=free is important when have different ranges among groups (as is the case with Msats, etc.)
+
+#quartz(10,10)#this is for Mac, just pops out a big external graphing window-I find this useful when using two monitors; there is an analagous command for PC
+print(hist2)
+
+#if want to write to file-
+#ppi=300 #define a pixels per inch term
+#png("Figure2.png", 
+#    width=20*ppi, 
+#    height=12*ppi, 
+#    res=ppi) #define your png file
+#hist2
+#dev.off()
+```
+
+#Bonus
+Show graph of Haplotype Freqs overlaid on map from tutorial from K. Gilbert Could be for future workshop as people advance and people are interested.
+
+#Statistical analysis
+R is good at this. There are so many packages available for all kinds of analyses. You will have to find what you need. The base package, which comes with R, has a lot of functions already. 
+
+Let's try to conduct a linear regression analysis between mass and SCL of green turtles. Often times, we use natural logarithm of mass in kg as the response variable and SCL in cm as the explanatory variable. In R, linear models are specified using the "lm" function.
+
+Before getting started with this section, we clean the work space by removing all the variables using the "rm" function. You can remove one variable at a time by specifying "rm(variable_name)" or remove all by "rm(list=ls())". Then load the data file again:
+
+```{r lm1, echo=TRUE}
+rm(list=ls())
+datCmCleaned <- read.table("data/Growth data Nov 2008 cleaned.csv", 
+                           header = TRUE,
+                           sep = ",")
+
+lm1 <- lm(log(Weight) ~ SCL, data = datCmCleaned)
+lm1
+```
+
+Just returning "lm1" results in seeing coefficients only. We want more than that, like SE of the estimated coefficients, for example. We use "summary":
+
+```{r lm2, echo=TRUE}
+summary(lm1)
+```
+
+To extract these coefficients and thier SEs, we assign it to a variable and pull out what we need:
+
+```{r lm3, echo=TRUE}
+sum_lm1 <- summary(lm1)
+sum_lm1$coefficients["SCL", "Std. Error"]
+```
+
+The adjusted R-squred value was ```r round(sum_lm1$adj.r.squared, 3)```.
+
+If you want to check how residuals are behaving, you can plot the returned object: plot(lm1). Seems like there are a few outliers. We should check those data points!
+
+We can make a regession plot with a fitted line with approxiamte 95% CI, or 2SE.
+
+```{r plot_lm1, echo=TRUE}
+df_predict <- data.frame(SCL = seq(min(datCmCleaned$SCL, na.rm=T),
+                                   max(datCmCleaned$SCL, na.rm=T), 
+                                   by = 1))
+t <- predict(lm1, 
+             newdata = df_predict, 
+             se.fit = T)
+plot(datCmCleaned$SCL, log(datCmCleaned$Weight),
+     pch = 19, xlab = "SCL (cm)", ylab = "log(Mass) (kg)",
+     col = rgb(67, 205, 128, maxColorValue = 255),
+     bty = 'l')
+lines(df_predict$SCL, t$fit, col = "black")
+lines(df_predict$SCL, t$fit + (2 * t$se.fit), col = "slategray")
+lines(df_predict$SCL, t$fit - (2 * t$se.fit), col = "slategray")
+```
+
